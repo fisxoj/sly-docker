@@ -3,7 +3,7 @@
 ;; Version: 0.1
 ;; URL: https://github.com/fisxoj/sly-docker
 ;; Keywords: lisp, sly, docker, docker-compose
-;; Package-Requires: ((emacs "24") (sly "1.0.0-beta2") (docker-tramp "0.1"))
+;; Package-Requires: ((emacs "24") (sly "1.0.0-beta2") (tramp-container "0.1"))
 ;; Author: Matt Novenstern <fisxoj@gmail.com>
 ;;
 ;; Copyright (C) 2019 Matt Novenstern
@@ -37,7 +37,7 @@
 
 (require 'sly)
 (require 'cl-lib)
-(require 'docker-tramp)
+(require 'tramp-container)
 (require 'json)
 
 
@@ -60,8 +60,34 @@
   (:on-load (add-to-list 'sly-filename-translations
 			 (sly-docker-create-filename-translator))))
 
+(defcustom sly-docker-container-runtime "podman"
+  "Container runtime to interact with (podman or docker)"
+  :group 'sly-docker
+  :version "29.1"
+  :type '(choice (const "podman")
+                 (const "docker")
+                 (string)))
+
+
+(defun sly-docker--running-containers ()
+  (when-let ((default-directory tramp-compat-temporary-file-directory)
+             (raw-list (shell-command-to-string
+                        (concat sly-docker-container-runtime
+                                " ps --format '{{.ID}}\t{{.Names}}'")))
+             (lines (split-string raw-list "\n" 'omit))
+             (pairs (mapcar
+                     (lambda (line)
+                       (when (string-match
+                              (rx bol (group (1+ nonl))
+                                  "\t" (group (1+ nonl)) eol)
+                              line)
+                         (cons (match-string 1 line) (match-string 2 line))))
+                     lines)))
+    pairs))
+
+
 (defun sly-docker--docker-hostname-is-docker-container-p (hostname)
-  (cl-find hostname (docker-tramp--running-containers)
+  (cl-find hostname (sly-docker--running-containers)
 	   :test 'equal
 	   :key 'car))
 
@@ -115,7 +141,7 @@
 
           (concat (car translation-data) path-difference))
       (tramp-make-tramp-file-name
-       "docker"
+       sly-docker-container-runtime
        nil
        ""
        (sly-machine-instance)

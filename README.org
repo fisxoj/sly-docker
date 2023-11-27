@@ -4,3 +4,5 @@
 [[https://travis-ci.org/fisxoj/sly-docker][https://travis-ci.org/fisxoj/sly-docker.svg?branch=master]]
 
 ~sly-docker~ is an external contrib for [[https://github.com/capitaomorte/sly][SLY]] that provides filname translations for ~xref-find-definition~ when code is mounted into a docker container from the host machine.  It uses [[https://github.com/emacs-pe/docker-tramp.el][docker-tramp.el]] as a backend for talking to the docker daemon.
+
+You can customize whether it uses =docker= or =podman= by modifying =sly-docker-container-runtime=.
