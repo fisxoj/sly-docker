@@ -45,7 +45,7 @@
 ;; filename translators
 (defun sly-find-filename-translators (hostname)
   (cond ((cdr (cl-assoc-if (lambda (predicate)
-                             (typecase predicate
+                             (cl-typecase predicate
                                ((or function symbol) (funcall predicate hostname))
                                (string (string-match-p predicate hostname))))
                            sly-filename-translations)))
@@ -87,7 +87,7 @@
 
 
 (defun sly-docker--docker-hostname-is-docker-container-p (hostname)
-  (cl-find hostname (sly-docker--running-containers)
+  (cl-find hostname (docker-tramp--running-containers) ;;(sly-docker--running-containers)
 	   :test 'equal
 	   :key 'car))
 
@@ -104,7 +104,7 @@
   (cl-flet ((bind-mount-p (mount)
                           (string-equal (gethash "Type" mount) "bind"))
             (get-mounts-for-container ()
-                                      (gethash "Mounts" (first (json-read-from-string (shell-command-to-string (format "%s container inspect %s" docker-tramp-docker-executable container)))))))
+                                      (gethash "Mounts" (cl-first (json-read-from-string (shell-command-to-string (format "%s container inspect %s" docker-tramp-docker-executable container)))))))
 
     (let ((json-object-type 'hash-table)
           (json-array-type 'list)
