@@ -1,6 +1,6 @@
 ;;; sly-docker.el --- Support for development using docker for SLY  -*- lexical-binding: t; -*-
 ;;
-;; Version: 0.1
+;; Version: 0.2
 ;; URL: https://github.com/fisxoj/sly-docker
 ;; Keywords: lisp, sly, docker, docker-compose
 ;; Package-Requires: ((emacs "24") (sly "1.0.0-beta2") (tramp-container "0.1"))
