@@ -104,7 +104,7 @@
   (cl-flet ((bind-mount-p (mount)
                           (string-equal (gethash "Type" mount) "bind"))
             (get-mounts-for-container ()
-                                      (gethash "Mounts" (cl-first (json-read-from-string (shell-command-to-string (format "%s container inspect %s" sly-docker-container-runtime)))))))
+                                      (gethash "Mounts" (cl-first (json-read-from-string (shell-command-to-string (format "%s container inspect %s" sly-docker-container-runtime container)))))))
 
     (let ((json-object-type 'hash-table)
           (json-array-type 'list)
